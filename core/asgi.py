@@ -1,5 +1,5 @@
 """
-ASGI config for quakeApi project.
+ASGI config for core project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,11 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'quakeApi.settings')
+from .celery import app as celery_app
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 application = get_asgi_application()
+
+
+__all__ = ('celery_app',)
