@@ -21,26 +21,29 @@ def obtener_sismos():
                 cols = [ele.text.strip() for ele in row.find_all('td')]
                 if cols:
                     fecha_local_y_lugar = cols[0]
-                    fecha_local = fecha_local_y_lugar[:19]
+                    # Convertir fecha local a datetime
+                    fecha_local = datetime.datetime.strptime(fecha_local_y_lugar[:19], '%Y-%m-%d %H:%M:%S')
                     lugar = fecha_local_y_lugar[19:].strip()
-                    latitud, longitud = cols[2].split(' ')
-                    profundidad = cols[3]
-                    magnitud = cols[4]
+                    # Convertir latitud y longitud a float
+                    latitud = float(cols[2].split(' ')[0])
+                    longitud = float(cols[2].split(' ')[1])
+                    # Extraer y convertir profundidad a float
+                    profundidad = float(re.search(r'\d+(\.\d+)?', cols[3]).group())
+                    # Extraer y convertir magnitud a float
+                    magnitud = float(re.search(r'\d+(\.\d+)?', cols[4]).group())
 
-                    # Limpiar la magnitud usando expresiones regulares para extraer solo el número
-                    magnitud_match = re.search(r'\d+(\.\d+)?', magnitud)
-                    if magnitud_match:
-                        magnitud_clean = magnitud_match.group(0)
-                    else:
-                        magnitud_clean = "0.0"  # Asumir un valor predeterminado si no se encuentra un número
+                    rows.append({
+                        'Fecha Local': fecha_local,
+                        'Lugar': lugar,
+                        'Fecha UTC': cols[1],  # Considera convertir esto también si es necesario
+                        'Latitud': latitud,
+                        'Longitud': longitud,
+                        'Profundidad': profundidad,
+                        'Magnitud': magnitud
+                    })
 
-                    rows.append([fecha_local, lugar, cols[1], latitud, longitud, profundidad, magnitud_clean])
-
-            df = pd.DataFrame(rows, columns=['Fecha Local', 'Lugar', 'Fecha UTC', 'Latitud', 'Longitud', 'Profundidad', 'Magnitud'])
-
-            # Convertir DataFrame a lista de diccionarios
-            return df.to_dict('records')
     else:
         print(f"Error en la petición web: {response.status_code}")
         return []
 
+    return rows
