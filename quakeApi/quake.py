@@ -1,49 +1,71 @@
+# quake.py
 import requests
 from bs4 import BeautifulSoup
 import datetime
-import pandas as pd
-import re  # Importar el módulo de expresiones regulares
+import re
+import csv
+
+
+
 
 def obtener_sismos():
     fecha_actual = datetime.datetime.now()
     formato_url = fecha_actual.strftime('%Y/%m/%Y%m%d')
     url = f'https://www.sismologia.cl/sismicidad/catalogo/{formato_url}.html'
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        table = soup.find('table', class_='sismologia detalle')
-        rows = []
-
-        if table:
-            for row in table.find_all('tr')[1:]:
-                cols = [ele.text.strip() for ele in row.find_all('td')]
-                if cols:
-                    fecha_local_y_lugar = cols[0]
-                    # Convertir fecha local a datetime
-                    fecha_local = datetime.datetime.strptime(fecha_local_y_lugar[:19], '%Y-%m-%d %H:%M:%S')
-                    lugar = fecha_local_y_lugar[19:].strip()
-                    # Convertir latitud y longitud a float
-                    latitud = float(cols[2].split(' ')[0])
-                    longitud = float(cols[2].split(' ')[1])
-                    # Extraer y convertir profundidad a float
-                    profundidad = float(re.search(r'\d+(\.\d+)?', cols[3]).group())
-                    # Extraer y convertir magnitud a float
-                    magnitud = float(re.search(r'\d+(\.\d+)?', cols[4]).group())
-
-                    rows.append({
-                        'Fecha Local': fecha_local,
-                        'Lugar': lugar,
-                        'Fecha UTC': cols[1],  # Considera convertir esto también si es necesario
-                        'Latitud': latitud,
-                        'Longitud': longitud,
-                        'Profundidad': profundidad,
-                        'Magnitud': magnitud
-                    })
-
-    else:
-        print(f"Error en la petición web: {response.status_code}")
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza una excepción para estados 4xx/5xx
+    except requests.exceptions.RequestException as e:
+        print(f"Error al realizar la solicitud HTTP: {e}")
         return []
 
-    return rows
+    soup = BeautifulSoup(response.text, 'html.parser')
+    table = soup.find('table', class_='sismologia detalle')
+    sismos_data = []
+
+    if not table:
+        print("No se encontró la tabla de sismos en la página web.")
+        return sismos_data
+
+    print("Tabla de sismos encontrada, procesando datos...")
+    for row in table.find_all('tr')[1:]:
+        cols = [ele.text.strip() for ele in row.find_all('td')]
+        if cols:
+            fecha_local = datetime.datetime.strptime(cols[0][:19], '%Y-%m-%d %H:%M:%S')
+            lugar = cols[0][19:].strip()
+            latitud = float(cols[2].split(' ')[0])
+            longitud = float(cols[2].split(' ')[1])
+            profundidad = float(re.search(r'\d+(\.\d+)?', cols[3]).group())
+            magnitud = float(re.search(r'\d+(\.\d+)?', cols[4]).group())
+
+            sismos_data.append({
+                'Fecha Local': fecha_local,
+                'Lugar': lugar,
+                'Fecha UTC': cols[1],  # Considera ajustar esto según necesidades
+                'Latitud': latitud,
+                'Longitud': longitud,
+                'Profundidad': profundidad,
+                'Magnitud': magnitud,
+            })
+    guardar_sismos_csv(sismos_data)
+    return sismos_data
+
+
+
+
+def guardar_sismos_csv(sismos_data, archivo='sismos_respaldo.csv'):
+    # Definir los nombres de las columnas basados en las claves del diccionario
+    columnas = ['Fecha Local', 'Lugar', 'Fecha UTC', 'Latitud', 'Longitud', 'Profundidad', 'Magnitud']
+    
+    try:
+        with open(archivo, mode='w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=columnas)
+            
+            writer.writeheader()
+            for sismo in sismos_data:
+                writer.writerow(sismo)
+                
+        print(f"Datos de sismos guardados en {archivo}")
+    except Exception as e:
+        print(f"Error al guardar los datos de sismos en CSV: {e}")
