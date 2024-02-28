@@ -1,4 +1,3 @@
-# tasks.py
 from celery import shared_task
 from django.utils.dateparse import parse_datetime
 from .models import Sismo

@@ -1,5 +1,4 @@
 from django.db import models
-
     
 class Sismo(models.Model):
     fecha_local = models.DateTimeField()  # Nueva línea para almacenar la fecha local
