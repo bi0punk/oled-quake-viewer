@@ -1,3 +1,4 @@
+# tasks.py
 from celery import shared_task
 from django.utils.dateparse import parse_datetime
 from .models import Sismo
@@ -6,15 +7,18 @@ from .quake import obtener_sismos
 @shared_task
 def fetch_sismos_task():
     sismos_data = obtener_sismos()
+    if not sismos_data:
+        print("No se obtuvieron datos de sismos.")
+        return
+
     for sismo in sismos_data:
-        fecha_local = parse_datetime(sismo['Fecha Local'])
+        fecha_local = sismo['Fecha Local']
         fecha_utc = parse_datetime(sismo['Fecha UTC'])
-        latitud = float(sismo['Latitud'])
-        longitud = float(sismo['Longitud'])
-        profundidad = float(sismo['Profundidad'].split(' ')[0])  # Asumiendo que la profundidad viene con unidad y solo se necesita el número
-        magnitud = float(sismo['Magnitud'])
+        latitud = sismo['Latitud']
+        longitud = sismo['Longitud']
+        profundidad = sismo['Profundidad']
+        magnitud = sismo['Magnitud']
         
-        # Usar get_or_create para evitar duplicados basados en fecha_utc, latitud y longitud
         sismo_objeto, creado = Sismo.objects.get_or_create(
             fecha_utc=fecha_utc,
             latitud=latitud,
@@ -31,6 +35,3 @@ def fetch_sismos_task():
             print(f"Nuevo sismo agregado: {sismo_objeto}")
         else:
             print("Sismo duplicado detectado, no se agregó.")
-
-
-
