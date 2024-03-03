@@ -5,9 +5,6 @@ import datetime
 import re
 import csv
 
-
-
-
 def obtener_sismos():
     fecha_actual = datetime.datetime.now()
     formato_url = fecha_actual.strftime('%Y/%m/%Y%m%d')
@@ -50,9 +47,6 @@ def obtener_sismos():
             })
     guardar_sismos_csv(sismos_data)
     return sismos_data
-
-
-
 
 def guardar_sismos_csv(sismos_data, archivo='sismos_respaldo.csv'):
     # Definir los nombres de las columnas basados en las claves del diccionario
