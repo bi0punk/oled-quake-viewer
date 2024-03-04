@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
@@ -16,7 +16,6 @@ class DetalleSismo(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SismoSerializer
 
 
-
-
-def mi_nueva_vista(request):
-    return HttpResponse("Hola, esta es mi nueva vista!")
+# Others Views
+def api(request):
+    return render(request, 'quakeApi/index.html')
