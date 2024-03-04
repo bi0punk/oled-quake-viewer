@@ -4,5 +4,5 @@ from . import views
 urlpatterns = [
     path('sismos/', ListaSismos.as_view(), name='lista-sismos'),
     path('sismos/<int:pk>/', DetalleSismo.as_view(), name='detalle-sismo'),
-    path('', views.mi_nueva_vista, name='api'), 
+    path('', views.api, name='api'), 
 ]
