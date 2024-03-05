@@ -22,9 +22,8 @@
    
    
 -->
-    
     <head>
-        <title>git add</title>
+        <title>Json Data</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
         <meta
@@ -45,7 +44,23 @@
         <header>
             <!-- place navbar here -->
         </header>
-        <main></main>
+        <main>
+            <h1>Datos de Sismos</h1>
+            <div id="datos-sismos"></div>
+        
+            <script>
+                // Obteniendo los datos JSON pasados a la plantilla
+                var sismosData = JSON.parse('{{ sismos_json|safe }}');
+                
+                // Ejemplo de cómo podrías renderizar los datos en el div #datos-sismos
+                var targetDiv = document.getElementById('datos-sismos');
+                sismosData.forEach(function(sismo) {
+                    var p = document.createElement('p');
+                    p.textContent = 'Sismo: ' + sismo.fecha_local; // Asegúrate de reemplazar 'algunCampo' con un campo real de tu modelo Sismo
+                    targetDiv.appendChild(p);
+                });
+            </script>
+        </main>
         <footer>
             <!-- place footer here -->
         </footer>
