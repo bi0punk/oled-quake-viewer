@@ -63,14 +63,14 @@ void setup() {
 
   // Muestra datos de ejemplo y datos de WiFi
   display.setCursor(0,0);
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("NodeMCU & OLED ######"));
-  display.println(F("WiFi Conectado"));
-  display.print(F("IP: "));
+  display.println(F("Sismologia | Wifi: OK"));
+  display.println(F("---------------------"));
+  display.println(F("Fecha: "));
+  display.println(F("Ub: 50 KM N Santiago"));
+  display.println(F("Lat:"));
+  display.println(F("Lon: "));
+  display.println(F("Mag: "));
+  display.println(F("Prof:"));
 
   display.println(WiFi.localIP());
   display.display();
