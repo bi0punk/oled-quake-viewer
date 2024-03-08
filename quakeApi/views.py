@@ -29,3 +29,22 @@ def api(request):
     serializer = SismoSerializer(sismos, many=True)
     # Devolviendo los datos serializados como una respuesta JSON
     return JsonResponse(serializer.data, safe=False)
+
+
+def latest_earthquake(request):
+    # Obtener el último registro de sismo ordenado por fecha_utc
+    latest_sismo = Sismo.objects.latest('fecha_utc')
+    
+    # Preparar la respuesta con los datos del sismo
+    response_data = {
+        'fecha_local': latest_sismo.fecha_local.strftime('%Y-%m-%d %H:%M:%S'),
+        'fecha_utc': latest_sismo.fecha_utc.strftime('%Y-%m-%d %H:%M:%S'),
+        'ubicacion': latest_sismo.ubicacion,
+        'latitud': latest_sismo.latitud,
+        'longitud': latest_sismo.longitud,
+        'profundidad': latest_sismo.profundidad,
+        'magnitud': latest_sismo.magnitud
+    }
+    
+    # Devolver la respuesta en formato JSON
+    return JsonResponse(response_data)
