@@ -10,8 +10,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "Zeus";
-const char* password = "4xD46>WV";
+const char* ssid     = "";
+const char* password = "";
 
 void setup() {
   Serial.begin(115200);
@@ -66,7 +66,7 @@ void setup() {
   display.println(F("Sismologia | Wifi: OK"));
   display.println(F("---------------------"));
   display.println(F("Fecha: "));
-  display.println(F("Ub: 50 KM N Santiago"));
+  display.println(F("Ub: "));
   display.println(F("Lat:"));
   display.println(F("Lon: "));
   display.println(F("Mag: "));
