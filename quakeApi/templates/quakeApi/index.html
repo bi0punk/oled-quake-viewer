@@ -20,7 +20,6 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
    MA 02110-1301, USA.
    
-   
 -->
     <head>
         <title>Json Data</title>
@@ -56,7 +55,7 @@
                 var targetDiv = document.getElementById('datos-sismos');
                 sismosData.forEach(function(sismo) {
                     var p = document.createElement('p');
-                    p.textContent = 'Sismo: ' + sismo.fecha_local; // Asegúrate de reemplazar 'algunCampo' con un campo real de tu modelo Sismo
+                    p.textContent = 'Sismo: ' + sismo.fecha_local; 
                     targetDiv.appendChild(p);
                 });
             </script>
