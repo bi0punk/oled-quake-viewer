@@ -10,8 +10,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "CAPI";
-const char* password = "NOAH2016";
+const char* ssid     = "SSID";
+const char* password = "PASS";
 
 void setup() {
   Serial.begin(115200);
