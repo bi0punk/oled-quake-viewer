@@ -2,6 +2,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 
 #define SCREEN_WIDTH 128 // ancho de pantalla OLED
 #define SCREEN_HEIGHT 64 // alto de pantalla OLED
@@ -10,8 +12,14 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "SSID";
-const char* password = "PASS";
+const char* ssid     = "Zeus";
+const char* password = "4xD46>WV";
+
+// URL del endpoint Django
+const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
+
+unsigned long lastRequestTime = 0;
+const unsigned long requestInterval = 10000; // Intervalo de solicitud en milisegundos
 
 void setup() {
   Serial.begin(115200);
@@ -60,22 +68,48 @@ void setup() {
   }
 
   display.clearDisplay(); // Limpia la pantalla para mostrar nuevos datos
-
-  // Muestra datos de ejemplo y datos de WiFi
-  display.setCursor(0,0);
-  display.println(F("Sismologia | Wifi: OK"));
-  display.println(F("---------------------"));
-  display.println(F("Fecha: "));
-  display.println(F("Ub: "));
-  display.println(F("Lat:"));
-  display.println(F("Lon: "));
-  display.println(F("Mag: "));
-  display.println(F("Prof:"));
-
-  display.println(WiFi.localIP());
-  display.display();
 }
 
 void loop() {
+  // Verifica si es tiempo de hacer una solicitud
+  if (millis() - lastRequestTime >= requestInterval || lastRequestTime == 0) {
+    lastRequestTime = millis(); // Actualiza el tiempo de la última solicitud
+
+    // Realiza la solicitud HTTP al servidor Django
+    WiFiClient client;
+    HTTPClient http;
+    http.begin(client, serverUrl);
+
+    int httpCode = http.GET();
+    
+    if (httpCode > 0) {
+      // Si la solicitud fue exitosa, lee la respuesta JSON
+      String payload = http.getString();
+      Serial.println(payload);
+      // Analiza el JSON y muestra los datos en la pantalla OLED
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, payload);
+      
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.print(F("Sismologia | Wifi: OK | "));
+      display.print(F("Fecha: ") + doc["fecha_local"].as<String>());
+      display.print(F(" | Ub: ") + doc["ubicacion"].as<String>());
+      display.print(F(" | Lat: ") + String(doc["latitud"].as<float>(), 6)); // Muestra 6 decimales para latitud
+      display.print(F(" | Lon: ") + String(doc["longitud"].as<float>(), 6)); // Muestra 6 decimales para longitud
+      display.print(F(" | Mag: ") + String(doc["magnitud"].as<float>(), 2)); // Muestra 2 decimales para magnitud
+      display.print(F(" | Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
+      display.print(F(" | IP: ") + WiFi.localIP().toString());
+      display.display();
+    } else {
+      Serial.println("Error en la solicitud HTTP");
+      display.clearDisplay();
+      display.println(F("Error en la solicitud HTTP"));
+      display.display();
+    }
+    
+    http.end(); // Libera los recursos de la solicitud HTTP
+  }
+
   // Puedes agregar más funcionalidad aquí
 }
