@@ -35,6 +35,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.1.87', '192.168.1.85', '127.0.0.1']
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -115,8 +117,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
 
+TIME_ZONE = 'GMT'
 USE_I18N = True
 
 USE_TZ = True

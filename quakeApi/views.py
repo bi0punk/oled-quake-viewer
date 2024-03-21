@@ -3,6 +3,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils import timezone
+
 # Create your views here.
 from rest_framework import generics
 from .serializers import SismoSerializer
@@ -35,9 +37,12 @@ def latest_earthquake(request):
     # Obtener el último registro de sismo ordenado por fecha_utc
     latest_sismo = Sismo.objects.latest('fecha_utc')
     
+    # Convertir la fecha y hora a la zona horaria local
+    fecha_local = timezone.localtime(latest_sismo.fecha_utc)
+    
     # Preparar la respuesta con los datos del sismo
     response_data = {
-        'fecha_local': latest_sismo.fecha_local.strftime('%Y-%m-%d %H:%M:%S'),
+        'fecha_local': fecha_local.strftime('%Y-%m-%d %H:%M:%S'),
         'fecha_utc': latest_sismo.fecha_utc.strftime('%Y-%m-%d %H:%M:%S'),
         'ubicacion': latest_sismo.ubicacion,
         'latitud': latest_sismo.latitud,
