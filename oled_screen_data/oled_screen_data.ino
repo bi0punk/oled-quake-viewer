@@ -87,19 +87,19 @@ void loop() {
       String payload = http.getString();
       Serial.println(payload);
       // Analiza el JSON y muestra los datos en la pantalla OLED
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, payload);
-      
       display.clearDisplay();
       display.setCursor(0,0);
-      display.print(F("Sismologia | Wifi: OK | "));
-      display.print(F("Fecha: ") + doc["fecha_local"].as<String>());
-      display.print(F(" | Ub: ") + doc["ubicacion"].as<String>());
-      display.print(F(" | Lat: ") + String(doc["latitud"].as<float>(), 6)); // Muestra 6 decimales para latitud
-      display.print(F(" | Lon: ") + String(doc["longitud"].as<float>(), 6)); // Muestra 6 decimales para longitud
-      display.print(F(" | Mag: ") + String(doc["magnitud"].as<float>(), 2)); // Muestra 2 decimales para magnitud
-      display.print(F(" | Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
-      display.print(F(" | IP: ") + WiFi.localIP().toString());
+      display.println(F("Sismologia | Wifi: OK"));
+      display.println(F("---------------------"));
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, payload);
+      display.println(F("Fecha: ") + doc["fecha_local"].as<String>());
+      display.println(F("Ub: ") + doc["ubicacion"].as<String>());
+      display.println(F("Lat: ") + String(doc["latitud"].as<float>(), 6)); // Muestra 6 decimales para latitud
+      display.println(F("Lon: ") + String(doc["longitud"].as<float>(), 6)); // Muestra 6 decimales para longitud
+      display.println(F("Mag: ") + String(doc["magnitud"].as<float>(), 2)); // Muestra 2 decimales para magnitud
+      display.println(F("Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
+      display.println(WiFi.localIP());
       display.display();
     } else {
       Serial.println("Error en la solicitud HTTP");
