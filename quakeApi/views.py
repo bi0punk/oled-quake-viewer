@@ -21,9 +21,6 @@ class DetalleSismo(generics.RetrieveUpdateDestroyAPIView):
     queryset = Sismo.objects.all()
     serializer_class = SismoSerializer
 
-
-# Others Views
-
 def api(request):
     # Obteniendo los últimos 7 objetos Sismo, ordenados por 'fecha_creacion' descendente
     sismos = Sismo.objects.all().order_by('-fecha_local')[:7]
@@ -31,7 +28,6 @@ def api(request):
     serializer = SismoSerializer(sismos, many=True)
     # Devolviendo los datos serializados como una respuesta JSON
     return JsonResponse(serializer.data, safe=False)
-
 
 def latest_earthquake(request):
     # Obtener el último registro de sismo ordenado por fecha_utc
