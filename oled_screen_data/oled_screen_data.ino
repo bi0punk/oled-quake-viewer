@@ -19,7 +19,7 @@ const char* password = "";
 const char* serverUrl = "http://192.:X000/api/";
 
 unsigned long lastRequestTime = 0;
-const unsigned long requestInterval = 10000; // Intervalo de solicitud en milisegundos
+const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
 
 void setup() {
   Serial.begin(115200);
@@ -93,10 +93,10 @@ void loop() {
       display.println(F("---------------------"));
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, payload);
-      display.println(F("Date: ") + doc["fecha_local"].as<String>());
+      display.println(F("Fecha: ") + doc["fecha_local"].as<String>());
       display.println(F("Ub: ") + doc["ubicacion"].as<String>());
-      display.println(F("Lat: ") + String(doc["latitud"].as<float>(), 6)); // Muestra 6 decimales para latitud
-      display.println(F("Lon: ") + String(doc["longitud"].as<float>(), 6)); // Muestra 6 decimales para longitud
+      display.println(F("Lat: ") + String(doc["latitud"].as<float>(), 3)); // Muestra 6 decimales para latitud
+      display.println(F("Lon: ") + String(doc["longitud"].as<float>(), 3)); // Muestra 6 decimales para longitud
       display.println(F("Mag: ") + String(doc["magnitud"].as<float>(), 2)); // Muestra 2 decimales para magnitud
       display.println(F("Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
       display.println(WiFi.localIP());
