@@ -12,11 +12,11 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "Zeus";
-const char* password = "4xD46>WV";
+const char* ssid     = "";
+const char* password = "";
 
 // URL del endpoint Django
-const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
+const char* serverUrl = "http://192.:X000/api/";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 10000; // Intervalo de solicitud en milisegundos
