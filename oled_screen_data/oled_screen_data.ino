@@ -19,7 +19,7 @@ const char* password = "4xD46>WV";
 const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
 
 unsigned long lastRequestTime = 0;
-const unsigned long requestInterval = 10000; // Intervalo de solicitud en milisegundos
+const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
 
 void setup() {
   Serial.begin(115200);
