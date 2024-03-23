@@ -33,12 +33,9 @@ def latest_earthquake(request):
     # Obtener el último registro de sismo ordenado por fecha_utc
     latest_sismo = Sismo.objects.latest('fecha_utc')
     
-    # Convertir la fecha y hora a la zona horaria local
-    fecha_local = timezone.localtime(latest_sismo.fecha_utc)
-    
     # Preparar la respuesta con los datos del sismo
     response_data = {
-        'fecha_local': fecha_local.strftime('%Y-%m-%d %H:%M:%S'),
+        'fecha_local': latest_sismo.fecha_local.strftime('%Y-%m-%d %H:%M:%S'),
         'fecha_utc': latest_sismo.fecha_utc.strftime('%Y-%m-%d %H:%M:%S'),
         'ubicacion': latest_sismo.ubicacion,
         'latitud': latest_sismo.latitud,
@@ -46,6 +43,10 @@ def latest_earthquake(request):
         'profundidad': latest_sismo.profundidad,
         'magnitud': latest_sismo.magnitud
     }
+    
+    # Devolver la respuesta en formato JSON
+    return JsonResponse(response_data)
+
     
     # Devolver la respuesta en formato JSON
     return JsonResponse(response_data)
