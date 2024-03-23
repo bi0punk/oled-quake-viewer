@@ -93,7 +93,7 @@ void loop() {
       display.println(F("---------------------"));
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, payload);
-      display.println(F("Fecha: ") + doc["fecha_local"].as<String>());
+      display.println(F("Date: ") + doc["fecha_local"].as<String>());
       display.println(F("Ub: ") + doc["ubicacion"].as<String>());
       display.println(F("Lat: ") + String(doc["latitud"].as<float>(), 6)); // Muestra 6 decimales para latitud
       display.println(F("Lon: ") + String(doc["longitud"].as<float>(), 6)); // Muestra 6 decimales para longitud
@@ -101,12 +101,7 @@ void loop() {
       display.println(F("Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
       display.println(WiFi.localIP());
       display.display();
-    } else {
-      Serial.println("Error en la solicitud HTTP");
-      display.clearDisplay();
-      display.println(F("Error en la solicitud HTTP"));
-      display.display();
-    }
+    } 
     
     http.end(); // Libera los recursos de la solicitud HTTP
   }
