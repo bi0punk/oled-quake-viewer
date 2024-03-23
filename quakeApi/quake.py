@@ -68,6 +68,7 @@ def obtener_sismos():
                 'Magnitud': magnitud,
             })
     guardar_sismos_csv(sismos_data)
+    print(sismos_data)
     return sismos_data
 
 def guardar_sismos_csv(sismos_data, archivo='sismos_respaldo.csv'):

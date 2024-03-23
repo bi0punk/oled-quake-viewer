@@ -15,7 +15,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'fetch_sismos_periodically': {  # Nombre descriptivo para el schedule
         'task': 'quakeApi.tasks.fetch_sismos_task',  # Nombre correcto de la tarea
-        'schedule': 3600.0,  # Ejemplo: Ejecuta cada 60 segundos
+        'schedule': 300.0,  # Ejemplo: Ejecuta cada 60 segundos
         # 'schedule': crontab(minute=0, hour='*/3'),  # Otro ejemplo: Ejecuta cada 3 horas
     },
 }
