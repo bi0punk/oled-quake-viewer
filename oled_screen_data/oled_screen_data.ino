@@ -16,7 +16,9 @@ const char* ssid     = "";
 const char* password = "";
 
 // URL del endpoint Django
+
 const char* serverUrl = "http://192.168.1.X:8000/api/";
+const char* serverUrl = "http://192.:X000/api/";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
