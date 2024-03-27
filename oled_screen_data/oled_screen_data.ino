@@ -12,14 +12,18 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "Zeus";
-const char* password = "4xD46>WV";
+const char* ssid     = "";
+const char* password = "";
 
 // URL del endpoint Django
-const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
+const char* serverUrl = "http://192.168.1.X:8000/api/";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
+
+// Objeto HTTPClient global para reutilización
+WiFiClient client;
+HTTPClient http;
 
 void setup() {
   Serial.begin(115200);
@@ -76,10 +80,7 @@ void loop() {
     lastRequestTime = millis(); // Actualiza el tiempo de la última solicitud
 
     // Realiza la solicitud HTTP al servidor Django
-    WiFiClient client;
-    HTTPClient http;
     http.begin(client, serverUrl);
-
     int httpCode = http.GET();
     
     if (httpCode > 0) {
@@ -93,12 +94,18 @@ void loop() {
       display.println(F("---------------------"));
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, payload);
-      display.println(F("Fecha: ") + doc["fecha_local"].as<String>());
-      display.println(F("Ub: ") + doc["ubicacion"].as<String>());
-      display.println(F("Lat: ") + String(doc["latitud"].as<float>(), 3)); // Muestra 6 decimales para latitud
-      display.println(F("Lon: ") + String(doc["longitud"].as<float>(), 3)); // Muestra 6 decimales para longitud
-      display.println(F("Mag: ") + String(doc["magnitud"].as<float>(), 2)); // Muestra 2 decimales para magnitud
-      display.println(F("Prof: ") + String(doc["profundidad"].as<float>(), 1)); // Muestra 1 decimal para profundidad
+      display.print(F("F:"));
+      display.println(doc["fecha_local"].as<String>());
+      display.print(F("U:"));
+      display.println(doc["ubicacion"].as<String>());
+      display.print(F("Lat:"));
+      display.print(doc["latitud"].as<float>(), 3); // Muestra 3 decimales para latitud
+      display.print(F(" Mag:"));
+      display.println(doc["magnitud"].as<float>(), 2); // Muestra 2 decimales para magnitud
+      display.print(F("Lon:"));
+      display.print(doc["longitud"].as<float>(), 3); // Muestra 3 decimales para longitud
+      display.print(F(" Prof:"));
+      display.println(doc["profundidad"].as<float>(), 1); // Muestra 1 decimal para profundidad
       display.println(WiFi.localIP());
       display.display();
     } 
