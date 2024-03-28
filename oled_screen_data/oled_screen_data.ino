@@ -1,6 +1,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
+#include <WiFi.h> // Agregar la librería WiFi para realizar la conexión a internet
+#include <HTTPClient.h> // Agregar la librería para realizar peticiones HTTP
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -36,6 +38,26 @@ void setup() {
   display.display();
   delay(2000);
   display.clearDisplay();
+
+  // Realizar la petición a la API
+  WiFi.begin("nombre_de_tu_red", "contraseña_de_tu_red"); // Cambiar "nombre_de_tu_red" y "contraseña_de_tu_red" por los datos de tu red WiFi
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando...");
+  }
+  Serial.println("Conectado a la red WiFi");
+
+  HTTPClient http;
+  http.begin("https://ejemplo.com/api"); // Cambiar "https://ejemplo.com/api" por la URL de tu API
+  int httpCode = http.GET();
+
+  if (httpCode > 0) {
+    String payload = http.getString();
+    Serial.println(payload); // Mostrar los datos obtenidos desde la API en el monitor serial
+  } else {
+    Serial.println("Error al realizar la petición HTTP");
+  }
+  http.end();
 }
 
 void loop() {
