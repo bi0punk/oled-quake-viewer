@@ -1,119 +1,67 @@
-#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
+#include <Wire.h>
 
-#define SCREEN_WIDTH 128 // ancho de pantalla OLED
-#define SCREEN_HEIGHT 64 // alto de pantalla OLED
-#define OLED_RESET    -1 // Reset no es requerido en algunos modelos
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Datos de la red WiFi
-const char* ssid     = "";
-const char* password = "";
+// Variable para almacenar el tamaño de fuente actual
+uint8_t currentTextSize = 1;
+uint8_t centralTextSize = 2; // Tamaño de fuente para el número central
 
-// URL del endpoint Django
-
-const char* serverUrl = "http://192.168.1.X:8000/api/";
-const char* serverUrl = "http://192.:X000/api/";
-
-unsigned long lastRequestTime = 0;
-const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
-
-// Objeto HTTPClient global para reutilización
-WiFiClient client;
-HTTPClient http;
+// Función para ajustar el tamaño de fuente según el número
+void setTextSize(int number) {
+  if (number >= 100) {
+    currentTextSize = 1;
+  } else if (number >= 10) {
+    currentTextSize = 1; // Cambiado a tamaño de fuente 1
+  } else {
+    currentTextSize = 1; // Cambiado a tamaño de fuente 1
+  }
+}
 
 void setup() {
-  Serial.begin(115200);
-  
-  // Inicia el bus I2C con pines personalizados
-  Wire.begin(14, 12); // SDA, SCL
-  
-  // Inicia la pantalla OLED
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("No se pudo encontrar la pantalla OLED"));
+  Serial.begin(9600);
+  Wire.begin(14, 12); // Inicia el bus I2C con pines GPIO 14 (SDA) y 12 (SCL)
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
     for(;;);
   }
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  
-  // Calcula el ancho del texto para centrarlo
-  int16_t x1, y1;
-  uint16_t w, h;
-  display.getTextBounds(F("Inicializando..."), 0, 0, &x1, &y1, &w, &h);
-  display.setCursor((SCREEN_WIDTH-w)/2, (SCREEN_HEIGHT-h)/2);
-  
-  display.println(F("Inicializando..."));
+  display.setTextColor(SSD1306_WHITE);
   display.display();
-
-  // Inicia la conexión WiFi
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  
-  Serial.println("WiFi conectado");
-  Serial.println("Dirección IP: ");
-  Serial.println(WiFi.localIP());
-
-  display.clearDisplay(); // Limpia la pantalla para la barra de carga y nuevos datos
-  
-  // Barra de carga
-  for(int i = 0; i <= 100; i+=10) {
-    display.fillRect(0, 15, (int)(1.28*i), 10, WHITE);
-    display.display();
-    delay(100);
-  }
-
-  display.clearDisplay(); // Limpia la pantalla para mostrar nuevos datos
+  delay(2000);
+  display.clearDisplay();
 }
 
 void loop() {
-  // Verifica si es tiempo de hacer una solicitud
-  if (millis() - lastRequestTime >= requestInterval || lastRequestTime == 0) {
-    lastRequestTime = millis(); // Actualiza el tiempo de la última solicitud
+  display.clearDisplay();
 
-    // Realiza la solicitud HTTP al servidor Django
-    http.begin(client, serverUrl);
-    int httpCode = http.GET();
-    
-    if (httpCode > 0) {
-      // Si la solicitud fue exitosa, lee la respuesta JSON
-      String payload = http.getString();
-      Serial.println(payload);
-      // Analiza el JSON y muestra los datos en la pantalla OLED
-      display.clearDisplay();
-      display.setCursor(0,0);
-      display.println(F("Sismologia | Wifi: OK"));
-      display.println(F("---------------------"));
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, payload);
-      display.print(F("F:"));
-      display.println(doc["fecha_local"].as<String>());
-      display.print(F("U:"));
-      display.println(doc["ubicacion"].as<String>());
-      display.print(F("Lat:"));
-      display.print(doc["latitud"].as<float>(), 3); // Muestra 3 decimales para latitud
-      display.print(F(" Mag:"));
-      display.println(doc["magnitud"].as<float>(), 2); // Muestra 2 decimales para magnitud
-      display.print(F("Lon:"));
-      display.print(doc["longitud"].as<float>(), 3); // Muestra 3 decimales para longitud
-      display.print(F(" Prof:"));
-      display.println(doc["profundidad"].as<float>(), 1); // Muestra 1 decimal para profundidad
-      display.println(WiFi.localIP());
-      display.display();
-    } 
-    
-    http.end(); // Libera los recursos de la solicitud HTTP
-  }
+  // Obtener la fecha y hora actual
+  String currentDateTime = "27/03/2024 12:34:56";
 
-  // Puedes agregar más funcionalidad aquí
+  // Dibujar la fecha y hora en la parte superior
+  display.setTextSize(currentTextSize);
+  display.setCursor(0, 0);
+  display.print(currentDateTime);
+
+  // Dibujar la hora en la parte inferior
+  display.setCursor(0, SCREEN_HEIGHT - (currentTextSize * 8));
+  display.print(currentDateTime);
+
+  // Dibujar un número en el medio
+  int middleNumber = 42;
+
+  // Ajustar el tamaño de fuente según el valor del número
+  setTextSize(middleNumber);
+  display.setTextSize(centralTextSize); // Tamaño de fuente más grande para el número central
+  display.setCursor((SCREEN_WIDTH - (6 * centralTextSize * 3)) / 2, (SCREEN_HEIGHT - (centralTextSize * 16)) / 2 + 8); // Posición centrada
+  display.print(middleNumber);
+
+  display.display();
+  delay(1000); // Actualizar cada segundo
 }
