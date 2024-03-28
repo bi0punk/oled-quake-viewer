@@ -1,89 +1,117 @@
+#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Wire.h>
-#include <WiFi.h> // Agregar la librería WiFi para realizar la conexión a internet
-#include <HTTPClient.h> // Agregar la librería para realizar peticiones HTTP
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET    -1
+#define SCREEN_WIDTH 128 // ancho de pantalla OLED
+#define SCREEN_HEIGHT 64 // alto de pantalla OLED
+#define OLED_RESET    -1 // Reset no es requerido en algunos modelos
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Variable para almacenar el tamaño de fuente actual
-uint8_t currentTextSize = 1;
-uint8_t centralTextSize = 2; // Tamaño de fuente para el número central
+// Datos de la red WiFi
+const char* ssid     = "";
+const char* password = "";
 
-// Función para ajustar el tamaño de fuente según el número
-void setTextSize(int number) {
-  if (number >= 100) {
-    currentTextSize = 1;
-  } else if (number >= 10) {
-    currentTextSize = 1; // Cambiado a tamaño de fuente 1
-  } else {
-    currentTextSize = 1; // Cambiado a tamaño de fuente 1
-  }
-}
+// URL del endpoint Django
+const char* serverUrl = "http://192.168.1.X:8000/api/";
+
+unsigned long lastRequestTime = 0;
+const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
+
+// Objeto HTTPClient global para reutilización
+WiFiClient client;
+HTTPClient http;
+
+String fechaLocal;
+String ubicacion;
+float latitud;
+float longitud;
+float magnitud;
+float profundidad;
+IPAddress localIP;
 
 void setup() {
-  Serial.begin(9600);
-  Wire.begin(14, 12); // Inicia el bus I2C con pines GPIO 14 (SDA) y 12 (SCL)
-
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("SSD1306 allocation failed"));
+  Serial.begin(115200);
+  
+  // Inicia el bus I2C con pines personalizados
+  Wire.begin(14, 12); // SDA, SCL
+  
+  // Inicia la pantalla OLED
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("No se pudo encontrar la pantalla OLED"));
     for(;;);
   }
 
-  display.setTextColor(SSD1306_WHITE);
-  display.display();
-  delay(2000);
   display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  
+  // Calcula el ancho del texto para centrarlo
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(F("Inicializando..."), 0, 0, &x1, &y1, &w, &h);
+  display.setCursor((SCREEN_WIDTH-w)/2, (SCREEN_HEIGHT-h)/2);
+  
+  display.println(F("Inicializando..."));
+  display.display();
 
-  // Realizar la petición a la API
-  WiFi.begin("nombre_de_tu_red", "contraseña_de_tu_red"); // Cambiar "nombre_de_tu_red" y "contraseña_de_tu_red" por los datos de tu red WiFi
+  // Inicia la conexión WiFi
+  WiFi.begin(ssid, password);
+  
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Conectando...");
+    delay(500);
+    Serial.print(".");
   }
-  Serial.println("Conectado a la red WiFi");
+  
+  Serial.println("WiFi conectado");
+  Serial.println("Dirección IP: ");
+  Serial.println(WiFi.localIP());
 
-  HTTPClient http;
-  http.begin("https://ejemplo.com/api"); // Cambiar "https://ejemplo.com/api" por la URL de tu API
-  int httpCode = http.GET();
-
-  if (httpCode > 0) {
-    String payload = http.getString();
-    Serial.println(payload); // Mostrar los datos obtenidos desde la API en el monitor serial
-  } else {
-    Serial.println("Error al realizar la petición HTTP");
+  display.clearDisplay(); // Limpia la pantalla para la barra de carga y nuevos datos
+  
+  // Barra de carga
+  for(int i = 0; i <= 100; i+=10) {
+    display.fillRect(0, 15, (int)(1.28*i), 10, WHITE);
+    display.display();
+    delay(100);
   }
-  http.end();
+
+  display.clearDisplay(); // Limpia la pantalla para mostrar nuevos datos
 }
 
 void loop() {
-  display.clearDisplay();
+  // Verifica si es tiempo de hacer una solicitud
+  if (millis() - lastRequestTime >= requestInterval || lastRequestTime == 0) {
+    lastRequestTime = millis(); // Actualiza el tiempo de la última solicitud
 
-  // Obtener la fecha y hora actual
-  String currentDateTime = "27/03/2024 12:34:56";
+    // Realiza la solicitud HTTP al servidor Django
+    http.begin(client, serverUrl);
+    int httpCode = http.GET();
+    
+    if (httpCode > 0) {
+      // Si la solicitud fue exitosa, lee la respuesta JSON
+      String payload = http.getString();
+      Serial.println(payload);
+      
+      // Analiza el JSON y guarda los datos
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, payload);
+      
+      fechaLocal = doc["fecha_local"].as<String>();
+      ubicacion = doc["ubicacion"].as<String>();
+      latitud = doc["latitud"].as<float>();
+      longitud = doc["longitud"].as<float>();
+      magnitud = doc["magnitud"].as<float>();
+      profundidad = doc["profundidad"].as<float>();
+      localIP = WiFi.localIP();
+    } 
+    
+    http.end(); // Libera los recursos de la solicitud HTTP
+  }
 
-  // Dibujar la fecha y hora en la parte superior
-  display.setTextSize(currentTextSize);
-  display.setCursor(0, 0);
-  display.print(currentDateTime);
-
-  // Dibujar la hora en la parte inferior
-  display.setCursor(0, SCREEN_HEIGHT - (currentTextSize * 8));
-  display.print(currentDateTime);
-
-  // Dibujar un número en el medio
-  int middleNumber = 42;
-
-  // Ajustar el tamaño de fuente según el valor del número
-  setTextSize(middleNumber);
-  display.setTextSize(centralTextSize); // Tamaño de fuente más grande para el número central
-  display.setCursor((SCREEN_WIDTH - (6 * centralTextSize * 3)) / 2, (SCREEN_HEIGHT - (centralTextSize * 16)) / 2 + 8); // Posición centrada
-  display.print(middleNumber);
-
-  display.display();
-  delay(1000); // Actualizar cada segundo
+  // Puedes utilizar los datos almacenados aquí
+  // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
