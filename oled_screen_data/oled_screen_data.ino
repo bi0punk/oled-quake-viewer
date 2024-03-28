@@ -12,11 +12,11 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Datos de la red WiFi
-const char* ssid     = "";
-const char* password = "";
+const char* ssid     = "Zeus";
+const char* password = "4xD46>WV";
 
 // URL del endpoint Django
-const char* serverUrl = "http://192.168.1.X:8000/api/";
+const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
@@ -32,6 +32,9 @@ float longitud;
 float magnitud;
 float profundidad;
 IPAddress localIP;
+
+int16_t x1, y1_coord; // Cambio de nombre de la variable y1 a y1_coord
+uint16_t w, h;
 
 void setup() {
   Serial.begin(115200);
@@ -50,9 +53,7 @@ void setup() {
   display.setTextColor(WHITE);
   
   // Calcula el ancho del texto para centrarlo
-  int16_t x1, y1;
-  uint16_t w, h;
-  display.getTextBounds(F("Inicializando..."), 0, 0, &x1, &y1, &w, &h);
+  display.getTextBounds(F("Inicializando..."), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
   display.setCursor((SCREEN_WIDTH-w)/2, (SCREEN_HEIGHT-h)/2);
   
   display.println(F("Inicializando..."));
@@ -107,6 +108,27 @@ void loop() {
       magnitud = doc["magnitud"].as<float>();
       profundidad = doc["profundidad"].as<float>();
       localIP = WiFi.localIP();
+
+      // Imprime la ubicación en la parte superior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, 0); // Posición en la parte superior
+      display.println(ubicacion);
+      
+      // Imprime la magnitud centrada
+      display.setTextSize(2); // Tamaño de fuente más grande
+      display.setTextColor(WHITE);
+      display.getTextBounds(String(magnitud), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
+      display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2); // Centra el texto horizontalmente
+      display.println(magnitud);
+      
+      // Imprime la fecha local en la parte inferior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, SCREEN_HEIGHT - 10); // Posición en la parte inferior
+      display.println(fechaLocal);
+      
+      display.display();
     } 
     
     http.end(); // Libera los recursos de la solicitud HTTP
@@ -115,3 +137,4 @@ void loop() {
   // Puedes utilizar los datos almacenados aquí
   // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
+
