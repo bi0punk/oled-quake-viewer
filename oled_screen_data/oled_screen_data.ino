@@ -113,7 +113,8 @@ void loop() {
       ubicacion.replace("ü", "\u00FC");
 
       ubicacion.replace(" al ", " | "); // Reemplaza " al " por " | "
-      ubicacion.replace(" de ", " | ");
+      // Modificar la cadena de ubicación
+      ubicacion.replaceFirst(" de ", " | "); // Reemplaza la primera ocurrencia de " de " por " | "
 
 
       // Imprimir la ubicación en el formato deseado
