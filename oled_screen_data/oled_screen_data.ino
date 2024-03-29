@@ -109,7 +109,14 @@ void loop() {
       profundidad = doc["profundidad"].as<float>();
       localIP = WiFi.localIP();
 
-      // Imprime la ubicación en la parte superior
+      // Reemplazar caracteres acentuados
+      ubicacion.replace("ü", "\u00FC");
+
+      ubicacion.replace(" al ", " | "); // Reemplaza " al " por " | "
+      ubicacion.replace(" de ", " | ");
+
+
+      // Imprimir la ubicación en el formato deseado
       display.setTextSize(1);
       display.setTextColor(WHITE);
       display.setCursor(0, 0); // Posición en la parte superior
@@ -121,12 +128,19 @@ void loop() {
       display.getTextBounds(String(magnitud), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
       display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2); // Centra el texto horizontalmente
       display.println(magnitud);
+
+      // Imprime la profundidad justo debajo de la magnitud centrada
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.getTextBounds(String(profundidad), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
+      display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT + h) / 2); // Centra el texto horizontalmente
+      display.println("Deep" + String(profundidad));
       
       // Imprime la fecha local en la parte inferior
       display.setTextSize(1);
       display.setTextColor(WHITE);
       display.setCursor(0, SCREEN_HEIGHT - 10); // Posición en la parte inferior
-      display.println(fechaLocal);
+      display.println(" " + fechaLocal);
       
       display.display();
     } 
@@ -137,4 +151,5 @@ void loop() {
   // Puedes utilizar los datos almacenados aquí
   // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
+
 
