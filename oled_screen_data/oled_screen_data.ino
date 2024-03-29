@@ -139,15 +139,13 @@ void loop() {
       display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2); // Centra el texto horizontalmente
       display.println(magnitud);
 
-      // Imprime la profundidad justo debajo de la magnitud centrada
-      // Imprime la profundidad justo debajo de la magnitud centrada
       display.setTextSize(1);
       display.setTextColor(WHITE);
-      display.getTextBounds(String(profundidad), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
+      String depthText = "Deep " + String(profundidad);
+      display.getTextBounds(depthText, 0, 0, &x1, &y1_coord, &w, &h); // Obtener el ancho total del texto
       display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT + h) / 2); // Centra el texto horizontalmente
-      display.println("Deep " + String(profundidad)); // Se añade un espacio después de "Deep" para ajustar el texto hacia la izquierda
+      display.println(depthText);
 
-      
       // Imprime la fecha local en la parte inferior
       display.setTextSize(1);
       display.setTextColor(WHITE);
