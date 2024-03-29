@@ -36,6 +36,14 @@ IPAddress localIP;
 int16_t x1, y1_coord; // Cambio de nombre de la variable y1 a y1_coord
 uint16_t w, h;
 
+// Función para reemplazar la primera ocurrencia de una subcadena en una cadena
+void replaceFirst(String& original, const String& search, const String& replace) {
+    int pos = original.indexOf(search); // Encuentra la posición de la primera ocurrencia de la subcadena
+    if (pos != -1) {
+        original = original.substring(0, pos) + replace + original.substring(pos + search.length());
+    }
+}
+
 void setup() {
   Serial.begin(115200);
   
@@ -113,9 +121,9 @@ void loop() {
       ubicacion.replace("ü", "\u00FC");
 
       ubicacion.replace(" al ", " | "); // Reemplaza " al " por " | "
-      // Modificar la cadena de ubicación
-      ubicacion.replaceFirst(" de ", " | "); // Reemplaza la primera ocurrencia de " de " por " | "
 
+      // Modificar la cadena de ubicación
+      replaceFirst(ubicacion, " de ", " | "); // Reemplaza la primera ocurrencia de " de " por " | "
 
       // Imprimir la ubicación en el formato deseado
       display.setTextSize(1);
@@ -152,5 +160,4 @@ void loop() {
   // Puedes utilizar los datos almacenados aquí
   // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
-
 
