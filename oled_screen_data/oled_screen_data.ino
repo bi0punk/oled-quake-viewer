@@ -120,10 +120,10 @@ void loop() {
       // Reemplazar caracteres acentuados
       ubicacion.replace("ü", "\u00FC");
 
-      ubicacion.replace(" al ", " | "); // Reemplaza " al " por " | "
+      ubicacion.replace(" al ", "|"); // Reemplaza " al " por " | "
 
       // Modificar la cadena de ubicación
-      replaceFirst(ubicacion, " de ", " | "); // Reemplaza la primera ocurrencia de " de " por " | "
+      replaceFirst(ubicacion, " de ", "|"); // Reemplaza la primera ocurrencia de " de " por " | "
 
       // Imprimir la ubicación en el formato deseado
       display.setTextSize(1);
