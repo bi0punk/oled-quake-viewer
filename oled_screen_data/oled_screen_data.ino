@@ -120,10 +120,11 @@ void loop() {
       // Reemplazar caracteres acentuados
       ubicacion.replace("ü", "\u00FC");
 
-      ubicacion.replace(" al ", "|"); // Reemplaza " al " por " | "
+      ubicacion.replace(" al ", " - "); 
+      ubicacion.replace(" km ", "Km"); 
 
       // Modificar la cadena de ubicación
-      replaceFirst(ubicacion, " de ", "|"); // Reemplaza la primera ocurrencia de " de " por " | "
+      replaceFirst(ubicacion, " de ", " - "); // Reemplaza la primera ocurrencia de " de " por " | "
 
       // Imprimir la ubicación en el formato deseado
       display.setTextSize(1);
@@ -139,11 +140,13 @@ void loop() {
       display.println(magnitud);
 
       // Imprime la profundidad justo debajo de la magnitud centrada
+      // Imprime la profundidad justo debajo de la magnitud centrada
       display.setTextSize(1);
       display.setTextColor(WHITE);
       display.getTextBounds(String(profundidad), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
       display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT + h) / 2); // Centra el texto horizontalmente
-      display.println("Deep" + String(profundidad));
+      display.println("Deep " + String(profundidad)); // Se añade un espacio después de "Deep" para ajustar el texto hacia la izquierda
+
       
       // Imprime la fecha local en la parte inferior
       display.setTextSize(1);
