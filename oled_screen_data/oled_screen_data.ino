@@ -16,10 +16,10 @@ const char* ssid     = "Zeus";
 const char* password = "4xD46>WV";
 
 // URL del endpoint Django
-const char* serverUrl = "http://192.168.1.87:8000/api/sismo/latest/";
+const char* serverUrl = "http://192.168.1.92:8000/api/sismo/latest/";
 
 unsigned long lastRequestTime = 0;
-const unsigned long requestInterval = 180000; // Intervalo de solicitud en milisegundos
+const unsigned long requestInterval = 300000; // Intervalo de solicitud en milisegundos
 
 // Objeto HTTPClient global para reutilización
 WiFiClient client;
@@ -27,14 +27,13 @@ HTTPClient http;
 
 String fechaLocal;
 String ubicacion;
-float latitud;
-float longitud;
 float magnitud;
 float profundidad;
-IPAddress localIP;
 
 int16_t x1, y1_coord; // Cambio de nombre de la variable y1 a y1_coord
 uint16_t w, h;
+
+bool isDataSwapped = false; // Variable para controlar el intercambio de datos
 
 // Función para reemplazar la primera ocurrencia de una subcadena en una cadena
 void replaceFirst(String& original, const String& search, const String& replace) {
@@ -111,11 +110,8 @@ void loop() {
       
       fechaLocal = doc["fecha_local"].as<String>();
       ubicacion = doc["ubicacion"].as<String>();
-      latitud = doc["latitud"].as<float>();
-      longitud = doc["longitud"].as<float>();
       magnitud = doc["magnitud"].as<float>();
       profundidad = doc["profundidad"].as<float>();
-      localIP = WiFi.localIP();
 
       // Reemplazar caracteres acentuados
       ubicacion.replace("ü", "\u00FC");
@@ -126,33 +122,61 @@ void loop() {
       // Modificar la cadena de ubicación
       replaceFirst(ubicacion, " de ", " - "); // Reemplaza la primera ocurrencia de " de " por " | "
 
-      // Imprimir la ubicación en el formato deseado
+      // Imprimir la fecha local en la parte superior
       display.setTextSize(1);
       display.setTextColor(WHITE);
       display.setCursor(0, 0); // Posición en la parte superior
-      display.println(ubicacion);
+      display.println(" " + fechaLocal);
       
       // Imprime la magnitud centrada
       display.setTextSize(2); // Tamaño de fuente más grande
       display.setTextColor(WHITE);
       display.getTextBounds(String(magnitud), 0, 0, &x1, &y1_coord, &w, &h); // Uso de la variable y1_coord
-      display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2); // Centra el texto horizontalmente
+      display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h * 2) / 2 + 8); // Centra el texto horizontalmente y baja una línea
       display.println(magnitud);
 
+      // Imprime "Deep" centrado debajo del dígito central
       display.setTextSize(1);
       display.setTextColor(WHITE);
-      String depthText = "Deep " + String(profundidad);
+      String depthText = "Deep: " + String(profundidad) + "km";
       display.getTextBounds(depthText, 0, 0, &x1, &y1_coord, &w, &h); // Obtener el ancho total del texto
-      display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT + h) / 2 + 10); // Centra el texto horizontalmente y baja un poco más // Centra el texto horizontalmente
+      int16_t depthTextWidth = w; // Ancho del texto "Deep"
+      int16_t depthTextHeight = h; // Alto del texto "Deep"
+      int16_t depthTextX = (SCREEN_WIDTH - depthTextWidth) / 2; // Posición X para centrar horizontalmente
+      int16_t depthTextY = (SCREEN_HEIGHT + h * 3) / 2; // Posición Y para colocar debajo del dígito central
+      display.setCursor(depthTextX, depthTextY); // Establece el cursor en la posición calculada
       display.println(depthText);
 
-      // Imprime la fecha local en la parte inferior
+      // Imprime la ubicación en la parte inferior con scroll
       display.setTextSize(1);
       display.setTextColor(WHITE);
       display.setCursor(0, SCREEN_HEIGHT - 10); // Posición en la parte inferior
-      display.println(" " + fechaLocal);
+      display.startscrollleft(0x00, 0x0F); // Inicia el scroll hacia la izquierda
+      display.println(ubicacion);
+      display.stopscroll(); // Detiene el scroll
       
       display.display();
+
+      // Realiza el intercambio de datos si corresponde
+      if (!isDataSwapped) {
+        isDataSwapped = true; // Marca que se ha realizado el intercambio de datos
+        // Mueve los datos de la página 0 a la página 7
+        display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK); // Borra la pantalla
+        display.setCursor(0, 0); // Posición en la parte superior
+        display.println(" "); // Espacio para fecha local
+        display.setTextSize(2); // Tamaño de fuente más grande
+        display.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h * 2) / 2 + 8); // Centra el texto horizontalmente y baja una línea
+        display.println(" "); // Espacio para magnitud
+        display.setTextSize(1); // Tamaño de fuente normal
+        display.setCursor(depthTextX, depthTextY); // Establece el cursor en la posición calculada
+        display.println(" "); // Espacio para profundidad
+        display.setCursor(0, SCREEN_HEIGHT - 10); // Posición en la parte inferior
+        display.println(" "); // Espacio para ubicación
+      } else {
+        isDataSwapped = false; // Marca que se ha restablecido el estado original
+        // Mueve los datos de la página 7 a la página 0
+        // Los datos se imprimen normalmente arriba
+      }
     } 
     
     http.end(); // Libera los recursos de la solicitud HTTP
@@ -161,4 +185,5 @@ void loop() {
   // Puedes utilizar los datos almacenados aquí
   // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
+
 
