@@ -117,7 +117,7 @@ void loop() {
       ubicacion.replace("ü", "\u00FC");
 
       ubicacion.replace(" al ", " - "); 
-      ubicacion.replace(" km ", "Km"); 
+      ubicacion.replace(" km ", " Km"); 
 
       // Modificar la cadena de ubicación
       replaceFirst(ubicacion, " de ", " - "); // Reemplaza la primera ocurrencia de " de " por " | "
@@ -138,7 +138,7 @@ void loop() {
       // Imprime "Deep" centrado debajo del dígito central
       display.setTextSize(1);
       display.setTextColor(WHITE);
-      String depthText = "Deep: " + String(profundidad) + "km";
+      String depthText = "Deep: " + String(profundidad) + " km";
       display.getTextBounds(depthText, 0, 0, &x1, &y1_coord, &w, &h); // Obtener el ancho total del texto
       int16_t depthTextWidth = w; // Ancho del texto "Deep"
       int16_t depthTextHeight = h; // Alto del texto "Deep"
