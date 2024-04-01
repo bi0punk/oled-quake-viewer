@@ -30,13 +30,6 @@ String longitud;
 
 bool isDataSwapped = false;
 
-void replaceFirst(String& original, const String& search, const String& replace) {
-    int pos = original.indexOf(search);
-    if (pos != -1) {
-        original.setCharAt(pos, replace[0]);
-    }
-}
-
 void setup() {
     Serial.begin(115200);
     Wire.begin(14, 12);
@@ -75,6 +68,13 @@ void setup() {
     display.clearDisplay();
 }
 
+void replaceFirst(String& original, const String& search, const String& replace) {
+    int pos = original.indexOf(search);
+    if (pos != -1) {
+        original.setCharAt(pos, replace[0]);
+    }
+}
+
 void loop() {
     if (millis() - lastRequestTime >= requestInterval || lastRequestTime == 0) {
         lastRequestTime = millis();
@@ -110,13 +110,13 @@ void loop() {
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
-            display.setCursor(0, SCREEN_HEIGHT / 4);
+            display.setCursor(0, (SCREEN_HEIGHT / 4) - 8); // Resta 8 para subir una posición el texto
             display.println(latitud);
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
-            display.setCursor(SCREEN_WIDTH - display.getCursorX(), SCREEN_HEIGHT / 4);
-            display.println(" Lat");
+            display.setCursor((SCREEN_WIDTH - display.getCursorX()) - 1, (SCREEN_HEIGHT / 4) - 8); // Resta 1 para mover una posición a la izquierda
+            display.println("Lat");
 
             display.setTextSize(2);
             display.setTextColor(WHITE);
@@ -131,13 +131,15 @@ void loop() {
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
-            display.setCursor(SCREEN_WIDTH - 50, SCREEN_HEIGHT / 2 - 16);
+            display.setCursor(SCREEN_WIDTH - 50, (SCREEN_HEIGHT / 2 - 16) - 8); // Resta 8 para subir una posición el valor
             display.println(longitud);
+
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
-            display.setCursor(SCREEN_WIDTH - 30, SCREEN_HEIGHT / 2 - 8);
+            display.setCursor((SCREEN_WIDTH - 30) + 8, (SCREEN_HEIGHT / 2 - 8) - 8); // Suma 8 para mover una posición más a la derecha
             display.println("Lon");
+
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
