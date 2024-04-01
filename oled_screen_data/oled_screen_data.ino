@@ -11,17 +11,14 @@
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Datos de la red WiFi
-const char* ssid     = "Zeus";
-const char* password = "4xD46>WV";
+const char* ssid     = "";
+const char* password = "";
 
-// URL del endpoint Django
-const char* serverUrl = "http://192.168.1.92:8000/api/sismo/latest/";
+const char* serverUrl = "";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 300000; // Intervalo de solicitud en milisegundos
 
-// Objeto HTTPClient global para reutilización
 WiFiClient client;
 HTTPClient http;
 
@@ -29,6 +26,8 @@ String fechaLocal;
 String ubicacion;
 float magnitud;
 float profundidad;
+String latitud; // Variable para almacenar la latitud
+String longitud; // Variable para almacenar la longitud
 
 int16_t x1, y1_coord; // Cambio de nombre de la variable y1 a y1_coord
 uint16_t w, h;
@@ -112,12 +111,14 @@ void loop() {
       ubicacion = doc["ubicacion"].as<String>();
       magnitud = doc["magnitud"].as<float>();
       profundidad = doc["profundidad"].as<float>();
+      latitud = doc["latitud"].as<String>(); // Obtén el valor de la latitud
+      longitud = doc["longitud"].as<String>(); // Obtén el valor de la longitud
 
       // Reemplazar caracteres acentuados
       ubicacion.replace("ü", "\u00FC");
 
       ubicacion.replace(" al ", " - "); 
-      ubicacion.replace(" km ", " Km"); 
+      ubicacion.replace(" km ", " Km "); 
 
       // Modificar la cadena de ubicación
       replaceFirst(ubicacion, " de ", " - "); // Reemplaza la primera ocurrencia de " de " por " | "
@@ -146,6 +147,30 @@ void loop() {
       int16_t depthTextY = (SCREEN_HEIGHT + h * 3) / 2; // Posición Y para colocar debajo del dígito central
       display.setCursor(depthTextX, depthTextY); // Establece el cursor en la posición calculada
       display.println(depthText);
+
+      // Imprime el valor de la latitud en la parte superior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, SCREEN_HEIGHT / 2 - 16); // Posición Y para el valor de la latitud una línea arriba
+      display.println(latitud);
+
+      // Imprime la etiqueta "Lat:" en la parte inferior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, SCREEN_HEIGHT / 2 - 8); // Posición Y para la etiqueta "Lat:" una línea abajo
+      display.println(" Lat");
+
+      // Imprime el valor de la longitud en la parte superior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, SCREEN_HEIGHT / 2 + 8); // Posición Y para el valor de la longitud una línea abajo de la latitud
+      display.println(longitud);
+
+      // Imprime la etiqueta "Long:" en la parte inferior
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, SCREEN_HEIGHT / 2 + 16); // Posición Y para la etiqueta "Long:" una línea abajo
+      display.println(" Long");
 
       // Imprime la ubicación en la parte inferior con scroll
       display.setTextSize(1);
@@ -185,5 +210,3 @@ void loop() {
   // Puedes utilizar los datos almacenados aquí
   // Por ejemplo, puedes enviarlos por MQTT, guardarlos en una base de datos, etc.
 }
-
-
