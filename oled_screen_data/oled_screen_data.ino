@@ -118,17 +118,29 @@ void loop() {
             display.setCursor((SCREEN_WIDTH - display.getCursorX()) - 1, (SCREEN_HEIGHT / 4) - 8); // Resta 1 para mover una posición a la izquierda
             display.println("Lat");
 
+            String magnitudExtension;
+
+            if (magnitud < 8.0) {
+                magnitudExtension = "Ml";
+            } else {
+                magnitudExtension = "Mw";
+            }
+
             char magnitudStr[6]; // Array para almacenar la cadena de la magnitud
             dtostrf(magnitud, 4, 1, magnitudStr); // Convertir magnitud a una cadena con una décima
+
+            // Concatenar la extensión a la cadena de magnitud
+            String magnitudCompleta = String(magnitudStr) + " " + magnitudExtension;
+
             display.setTextSize(2);
             display.setTextColor(WHITE);
-            display.setCursor((SCREEN_WIDTH - 30) / 2 - 12, (SCREEN_HEIGHT - 15) / 2); // Ajuste de posición del dígito de magnitud
-            display.println(magnitudStr);
+            display.setCursor((SCREEN_WIDTH - 30) / 2 - 12 - 3 * 6, (SCREEN_HEIGHT - 15) / 2); // Ajuste de posición del dígito de magnitud
+            display.println(magnitudCompleta);
 
             String depthText = "Deep: " + String(profundidad) + " Km";
             display.setTextSize(1);
             display.setTextColor(WHITE);
-            display.setCursor((SCREEN_WIDTH - 80) / 2, (SCREEN_HEIGHT + 15) / 2);
+            display.setCursor((SCREEN_WIDTH - 80) / 2 - 6, (SCREEN_HEIGHT + 15) / 2); // Resta 6 para mover una posición a la izquierda
             display.println(depthText);
 
             display.setTextSize(1);
@@ -136,12 +148,10 @@ void loop() {
             display.setCursor(SCREEN_WIDTH - 50, (SCREEN_HEIGHT / 2 - 16) - 8); // Resta 8 para subir una posición el valor
             display.println(longitud);
 
-
             display.setTextSize(1);
             display.setTextColor(WHITE);
             display.setCursor((SCREEN_WIDTH - 30) + 8, (SCREEN_HEIGHT / 2 - 8) - 8); // Suma 8 para mover una posición más a la derecha
             display.println("Lon");
-
 
             display.setTextSize(1);
             display.setTextColor(WHITE);
