@@ -11,9 +11,9 @@
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-const char* ssid = "Zeus";
-const char* password = "4xD46>WV";
-const char* serverUrl = "http://192.168.1.92:8000/api/sismo/latest/";
+const char* ssid = "";
+const char* password = "";
+const char* serverUrl = "";
 
 unsigned long lastRequestTime = 0;
 const unsigned long requestInterval = 300000;
