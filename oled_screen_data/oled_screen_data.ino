@@ -123,7 +123,7 @@ void loop() {
             display.setCursor((SCREEN_WIDTH - 30) / 2 - 12, (SCREEN_HEIGHT - 15) / 2); // Ajuste de posición del dígito de magnitud
             display.println(magnitud);
 
-            String depthText = "Deep: " + String(profundidad) + " km";
+            String depthText = "Deep: " + String(profundidad) + " Km";
             display.setTextSize(1);
             display.setTextColor(WHITE);
             display.setCursor((SCREEN_WIDTH - 80) / 2, (SCREEN_HEIGHT + 15) / 2);
