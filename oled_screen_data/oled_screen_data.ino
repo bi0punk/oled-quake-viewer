@@ -118,12 +118,14 @@ void loop() {
             display.setCursor((SCREEN_WIDTH - display.getCursorX()) - 1, (SCREEN_HEIGHT / 4) - 8); // Resta 1 para mover una posición a la izquierda
             display.println("Lat");
 
+            char magnitudStr[6]; // Array para almacenar la cadena de la magnitud
+            dtostrf(magnitud, 4, 1, magnitudStr); // Convertir magnitud a una cadena con una décima
             display.setTextSize(2);
             display.setTextColor(WHITE);
             display.setCursor((SCREEN_WIDTH - 30) / 2 - 12, (SCREEN_HEIGHT - 15) / 2); // Ajuste de posición del dígito de magnitud
-            display.println(magnitud);
+            display.println(magnitudStr);
 
-            String depthText = "Deep: " + String(profundidad) + " km";
+            String depthText = "Deep: " + String(profundidad) + " Km";
             display.setTextSize(1);
             display.setTextColor(WHITE);
             display.setCursor((SCREEN_WIDTH - 80) / 2, (SCREEN_HEIGHT + 15) / 2);
@@ -161,4 +163,3 @@ void loop() {
         http.end();
     }
 }
-
