@@ -18,4 +18,4 @@ Technologies used in the project:
 
 <h2>💻 Demo</h2>
 
-![NodeMCU OLED](https://i.ibb.co/mHJxfxR/1712080649555.jpg)
+![]()
