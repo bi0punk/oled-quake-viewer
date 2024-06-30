@@ -18,4 +18,4 @@ Technologies used in the project:
 
 <h2>💻 Demo</h2>
 
-![]()
+![](https://i.ibb.co/M50b64f/IMG-20240402-105409.jpg)
