@@ -1,21 +1,30 @@
-<p align="center"><img src="https://socialify.git.ci/bi0punk/oled-quake-viewer/image?language=1&amp;name=1&amp;owner=1&amp;stargazers=1&amp;theme=Light" alt="project-image"></p>
+# oled-quake-viewer
 
-<p id="description">Django Rest Python project that captures and sends data to the NodeMCU ESP8266 development board to view via OLED screen.</p>
+Captures earthquake/seismic data via REST API and sends it to a NodeMCU ESP8266 board with an OLED screen for display. Uses Django REST backend with Celery for scheduled periodic data fetching.
 
-  
-  
-<h2>💻 Built with</h2>
+## Stack
 
-Technologies used in the project:
+Python 3, Django REST Framework, Celery, Redis, SQLite, Arduino/NodeMCU ESP8266, OLED display
 
-*   Python
-*   Arduino
-*   NodeMCU
-*   Flask Rest Framework
-*   Sqlite
-*   Celery
-*   Redis Server
+## Components
 
-<h2>💻 Demo</h2>
+- `quakeApi/` — Django REST API with earthquake data endpoints
+- Celery beat scheduler for periodic data fetching
+- NodeMCU firmware for OLED display rendering
 
-![](https://i.ibb.co/M50b64f/IMG-20240402-105409.jpg)
+## Usage
+
+```bash
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+Start Celery worker:
+```bash
+celery -A quakeApi worker -l info
+celery -A quakeApi beat -l info
+```
+
+## License
+
+MIT
