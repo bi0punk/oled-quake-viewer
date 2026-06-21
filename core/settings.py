@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
@@ -27,10 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c=mtba$a=(29t6a8ei1t#0381kt%jbz5=1!sshy_1hnmdoxqp&'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'insecure-dev-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['192.168.1.87', '192.168.1.87', '192.168.1.92', '127.0.0.1']
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
