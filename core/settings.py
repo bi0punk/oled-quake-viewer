@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'fetch_sismos_periodically': {  # Nombre descriptivo para el schedule
         'task': 'quakeApi.tasks.fetch_sismos_task',  # Nombre correcto de la tarea
