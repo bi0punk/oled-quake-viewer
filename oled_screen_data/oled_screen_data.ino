@@ -165,58 +165,53 @@ void loop() {
             display.setCursor(0, SCREEN_HEIGHT - 10);
             display.println(ubicacionText);
 
-            // Ciclo de desplazamiento solo para la ubicación
-            while (true) {
-                // Desplazar el texto de la ubicación hacia la izquierda
-                for (int16_t i = 0; i >= -SCREEN_WIDTH; i--) {
-                    display.clearDisplay(); // Limpiar pantalla
-                    // Mostrar el texto desplazado
-                    display.setCursor(i, SCREEN_HEIGHT - 10);
-                    display.println(ubicacionText);
-                    
-                    // Mostrar otros datos fijos
-                    display.setTextSize(1);
-                    display.setTextColor(WHITE);
-                    display.setCursor(0, 0);
-                    display.println(" " + fechaLocal);
+            // Ciclo de desplazamiento solo para la ubicación (una iteración por loop())
+            static int16_t scrollOffset = 0;
+            display.clearDisplay();
+            display.setCursor(scrollOffset, SCREEN_HEIGHT - 10);
+            display.println(ubicacionText);
 
-                    display.setTextSize(1);
-                    display.setTextColor(WHITE);
-                    display.setCursor(0, (SCREEN_HEIGHT / 4) - 8); // Resta 8 para subir una posición el texto
-                    display.println(latitud);
+            display.setTextSize(1);
+            display.setTextColor(WHITE);
+            display.setCursor(0, 0);
+            display.println(" " + fechaLocal);
 
-                    display.setTextSize(1);
-                    display.setTextColor(WHITE);
-                    display.setCursor((SCREEN_WIDTH - display.getCursorX()) - 1, (SCREEN_HEIGHT / 4) - 8); // Resta 1 para mover una posición a la izquierda
-                    display.println("Lat");
+            display.setTextSize(1);
+            display.setTextColor(WHITE);
+            display.setCursor(0, (SCREEN_HEIGHT / 4) - 8);
+            display.println(latitud);
 
-                    display.setTextSize(2);
-                    display.setTextColor(WHITE);
-                    // Ajuste de posición del dígito de magnitud, desplazado un espacio a la izquierda
-                    display.setCursor((SCREEN_WIDTH - 30) / 2 - 12 - 3 * 6 - 6, (SCREEN_HEIGHT - 15) / 2); 
-                    display.println(magnitudCompleta);
+            display.setTextSize(1);
+            display.setTextColor(WHITE);
+            display.setCursor((SCREEN_WIDTH - display.getCursorX()) - 1, (SCREEN_HEIGHT / 4) - 8);
+            display.println("Lat");
 
-                    display.setTextSize(1);
-                    display.setTextColor(BLACK, WHITE);
-                    // Ajustando la posición del texto en la pantalla para desplazarlo un espacio a la izquierda
-                    display.setCursor((SCREEN_WIDTH - 80) / 2 - 6, (SCREEN_HEIGHT + 15) / 2);
-                    display.println(depthText);
+            display.setTextSize(2);
+            display.setTextColor(WHITE);
+            display.setCursor((SCREEN_WIDTH - 30) / 2 - 12 - 3 * 6 - 6, (SCREEN_HEIGHT - 15) / 2);
+            display.println(magnitudCompleta);
 
-                    display.setTextSize(1);
-                    display.setTextColor(WHITE);
-                    display.setCursor(SCREEN_WIDTH - 50, (SCREEN_HEIGHT / 2 - 16) - 8); // Resta 8 para subir una posición el valor
-                    display.println(longitud);
+            display.setTextSize(1);
+            display.setTextColor(BLACK, WHITE);
+            display.setCursor((SCREEN_WIDTH - 80) / 2 - 6, (SCREEN_HEIGHT + 15) / 2);
+            display.println(depthText);
 
-                    display.setTextSize(1);
-                    display.setTextColor(WHITE);
-                    display.setCursor((SCREEN_WIDTH - 30) + 8, (SCREEN_HEIGHT / 2 - 8) - 8); // Suma 8 para mover una posición más a la derecha
-                    display.println("Lon");
+            display.setTextSize(1);
+            display.setTextColor(WHITE);
+            display.setCursor(SCREEN_WIDTH - 50, (SCREEN_HEIGHT / 2 - 16) - 8);
+            display.println(longitud);
 
-                    display.display();
-                    delay(50); // Puedes ajustar el retraso según sea necesario para controlar la velocidad del desplazamiento
-                }
-                // Volver al inicio del ciclo de desplazamiento
+            display.setTextSize(1);
+            display.setTextColor(WHITE);
+            display.setCursor((SCREEN_WIDTH - 30) + 8, (SCREEN_HEIGHT / 2 - 8) - 8);
+            display.println("Lon");
+
+            display.display();
+            scrollOffset--;
+            if (scrollOffset < -SCREEN_WIDTH) {
+                scrollOffset = 0;
             }
+            delay(50);
 
             // Limpiar la pantalla si es necesario
             if (!isDataSwapped) {
