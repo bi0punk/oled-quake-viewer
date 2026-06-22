@@ -12,7 +12,7 @@ def fetch_sismos_task():
 
     for sismo in sismos_data:
         fecha_local = sismo['Fecha Local']
-        fecha_utc = parse_datetime(sismo['Fecha UTC'])
+        fecha_utc = parse_datetime(sismo['Fecha UTC'].replace(' ', 'T'))
         latitud = sismo['Latitud']
         longitud = sismo['Longitud']
         profundidad = sismo['Profundidad']
