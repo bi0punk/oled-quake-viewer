@@ -33,7 +33,7 @@ def obtener_sismos():
     url = f'https://www.sismologia.cl/sismicidad/catalogo/{formato_url}.html'
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         response.raise_for_status()  # Lanza una excepción para estados 4xx/5xx
     except requests.exceptions.RequestException as e:
         print(f"Error al realizar la solicitud HTTP: {e}")
