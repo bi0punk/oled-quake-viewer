@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oled-quake-viewer"
+version = "1.0.0"
+description = "Captures earthquake/seismic data via REST API and sends it to a NodeMCU ESP8266 board with an OLED screen for display. Uses Django REST backend with Celery for scheduled periodic data fetching."
+requires-python = ">=3.11"
+dependencies = [
+    "django>=4.2",
+    "djangorestframework>=3.14",
+    "celery>=5.3",
+    "django-celery-beat>=2.5",
+    "redis>=5.0",
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "numpy>=1.26",
+    "pandas>=2.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0", "ruff>=0.6.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
