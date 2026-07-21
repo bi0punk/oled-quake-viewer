@@ -55,8 +55,10 @@ def obtener_sismos():
             lugar = cols[0][19:].strip()
             latitud = float(cols[2].split(' ')[0])
             longitud = float(cols[2].split(' ')[1])
-            profundidad = float(re.search(r'\d+(\.\d+)?', cols[3]).group())
-            magnitud = float(re.search(r'\d+(\.\d+)?', cols[4]).group())
+            prof_match = re.search(r'\d+(\.\d+)?', cols[3])
+            profundidad = float(prof_match.group()) if prof_match else 0.0
+            mag_match = re.search(r'\d+(\.\d+)?', cols[4])
+            magnitud = float(mag_match.group()) if mag_match else 0.0
 
             sismos_data.append({
                 'Fecha Local': fecha_local,
