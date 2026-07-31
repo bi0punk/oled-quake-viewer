@@ -2,7 +2,6 @@ amqp==5.2.0
 asgiref==3.7.2
 beautifulsoup4==4.12.3
 billiard==4.2.0
-bs4==0.0.2
 celery==5.3.6
 certifi==2024.2.2
 charset-normalizer==3.3.2
