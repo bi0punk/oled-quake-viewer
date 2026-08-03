@@ -4,7 +4,7 @@ Captures earthquake/seismic data via REST API and displays it on a NodeMCU ESP82
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
-[![CI](https://github.com/tu-usuario/oled-quake-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/tu-usuario/oled-quake-viewer/actions/workflows/ci.yml)
+[![CI](https://github.com/bi0punk/oled-quake-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/bi0punk/oled-quake-viewer/actions/workflows/ci.yml)
 
 ## Tabla de Contenidos
 
@@ -67,7 +67,7 @@ oled-quake-viewer/
 ## Instalación
 
 ```bash
-git clone https://github.com/tu-usuario/oled-quake-viewer.git
+git clone https://github.com/bi0punk/oled-quake-viewer.git
 cd oled-quake-viewer
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
