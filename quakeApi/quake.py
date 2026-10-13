@@ -21,11 +21,13 @@
 #  
 #  
 
-import requests
-from bs4 import BeautifulSoup
+import csv
 import datetime
 import re
-import csv
+
+import requests
+from bs4 import BeautifulSoup
+
 
 def obtener_sismos():
     fecha_actual = datetime.datetime.now()

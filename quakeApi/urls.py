@@ -1,7 +1,11 @@
 from django.urls import path
-from .views import ListaSismos, DetalleSismo  # Importación correcta desde views.py
+
 from . import views
-from .views import latest_earthquake
+from .views import (  # Importación correcta desde views.py
+    DetalleSismo,
+    ListaSismos,
+    latest_earthquake,
+)
 
 urlpatterns = [
     path('sismos/', ListaSismos.as_view(), name='lista-sismos'),

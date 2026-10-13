@@ -1,7 +1,9 @@
 from celery import shared_task
 from django.utils.dateparse import parse_datetime
+
 from .models import Sismo
 from .quake import obtener_sismos
+
 
 @shared_task
 def fetch_sismos_task():

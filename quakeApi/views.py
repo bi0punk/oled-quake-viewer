@@ -2,8 +2,10 @@ from django.http import JsonResponse
 
 # Create your views here.
 from rest_framework import generics
-from .serializers import SismoSerializer
+
 from .models import Sismo
+from .serializers import SismoSerializer
+
 
 class ListaSismos(generics.ListCreateAPIView):
     queryset = Sismo.objects.all()
@@ -13,7 +15,7 @@ class DetalleSismo(generics.RetrieveUpdateDestroyAPIView):
     queryset = Sismo.objects.all()
     serializer_class = SismoSerializer
 
-def api(request):
+def api(_request):
     # Obteniendo los últimos 7 objetos Sismo, ordenados por 'fecha_creacion' descendente
     sismos = Sismo.objects.all().order_by('-fecha_local')[:7]
     # Serializando los datos
@@ -21,7 +23,7 @@ def api(request):
     # Devolviendo los datos serializados como una respuesta JSON
     return JsonResponse(serializer.data, safe=False)
 
-def latest_earthquake(request):
+def latest_earthquake(_request):
     # Obtener el último registro de sismo ordenado por fecha_utc
     latest_sismo = Sismo.objects.latest('fecha_utc')
     
@@ -35,10 +37,6 @@ def latest_earthquake(request):
         'profundidad': latest_sismo.profundidad,
         'magnitud': latest_sismo.magnitud
     }
-    
-    # Devolver la respuesta en formato JSON
-    return JsonResponse(response_data)
-
     
     # Devolver la respuesta en formato JSON
     return JsonResponse(response_data)
