@@ -111,15 +111,17 @@ python manage.py migrate
 
 Iniciar servidor Django y workers Celery:
 
+Exporta las variables de `.env` en la shell antes de arrancar los procesos (ver [Configuración](#configuración)).
+
 ```bash
 # Servidor de desarrollo
 python manage.py runserver
 
 # Worker Celery (terminal 2)
-celery -A quakeApi worker -l info
+celery -A core worker -l info
 
 # Beat scheduler (terminal 3)
-celery -A quakeApi beat -l info
+celery -A core beat -l info
 ```
 
 Endpoints REST (bajo `/api/`):
@@ -139,13 +141,21 @@ Variables de entorno (ver `.env.example`):
 
 | Variable                | Default                          | Descripción                        |
 |-------------------------|----------------------------------|------------------------------------|
-| `SECRET_KEY`            | `change-me-to-a-random-secret-key` | Clave secreta de Django          |
-| `DEBUG`                 | `True`                           | Modo debug                         |
-| `DATABASE_URL`          | `sqlite:///db.sqlite3`           | URL de la base de datos (SQLite)   |
+| `DJANGO_SECRET_KEY`     | aleatoria por proceso (`secrets.token_hex(32)`) | Clave secreta de Django; define una fija en producción |
+| `DJANGO_DEBUG`          | `False`                          | Modo debug (`true`/`false`)        |
+| `DJANGO_ALLOWED_HOSTS`  | `127.0.0.1`                      | Hosts permitidos, separados por comas |
 | `CELERY_BROKER_URL`     | `redis://localhost:6379/0`       | Broker de Celery                   |
 | `CELERY_RESULT_BACKEND` | `redis://localhost:6379/0`       | Backend de resultados de Celery    |
 
-> Nota: `core/settings.py` lee del entorno `DJANGO_SECRET_KEY`, `DJANGO_DEBUG` y `DJANGO_ALLOWED_HOSTS`, y fija `CELERY_BROKER_URL`/`CELERY_RESULT_BACKEND` en `redis://localhost:6379/0`. El schedule de Celery Beat ejecuta `fetch_sismos_task` cada 300 segundos.
+> `DATABASE_URL` no se lee: la base de datos es siempre SQLite en `db.sqlite3`. El schedule de Celery Beat ejecuta `fetch_sismos_task` cada 300 segundos.
+>
+> El proyecto **no carga `.env` automáticamente**. Copia el ejemplo y exporta las variables en la misma shell antes de arrancar Django o Celery:
+>
+> ```bash
+> cp .env.example .env
+> # editar .env
+> set -a; source .env; set +a
+> ```
 
 ## Tests / CI
 
